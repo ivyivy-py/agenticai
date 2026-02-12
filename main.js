@@ -4,18 +4,17 @@ class RecipePlatform extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.shoppingList = new Set();
         this.spoonacularApiKey = '0629d218da794d40a24289e25ad7bbd8';
-        // IMPORTANT: Add your Pexels API key below
-        this.pexelsApiKey = 'ADD_YOUR_PEXELS_API_KEY_HERE'; 
+        this.pexelsApiKey = 'ADD_YOUR_PEXELS_API_KEY_HERE';
 
         this.shadowRoot.innerHTML = `
             <style>
                 :host {
-                    --primary-color: #f57c00; /* Warm Orange */
-                    --secondary-color: #ffcc80; /* Light Orange */
-                    --text-color: #5d4037; /* Dark Brown */
+                    --primary-color: #f57c00;
+                    --secondary-color: #ffcc80;
+                    --text-color: #5d4037;
                     --bg-color: #ffffff;
                     --card-shadow: 0 5px 20px rgba(93, 64, 55, 0.15);
-                    --input-border-color: #d7ccc8; /* Soft Brown-Gray */
+                    --input-border-color: #d7ccc8;
                 }
                 .container {
                     display: grid;
@@ -46,8 +45,8 @@ class RecipePlatform extends HTMLElement {
                     background-color: #fff;
                     color: var(--text-color);
                 }
-                 #search-input::placeholder, #calorie-input::placeholder {
-                    color: #a1887f; /* Lighter brown for placeholder */
+                #search-input::placeholder, #calorie-input::placeholder {
+                    color: #a1887f;
                 }
                 #search-button {
                     padding: 12px 25px;
@@ -60,14 +59,14 @@ class RecipePlatform extends HTMLElement {
                     transition: background-color 0.3s;
                 }
                 #search-button:hover {
-                    background-color: #ef6c00; /* Slightly darker orange */
+                    background-color: #ef6c00;
                 }
                 .results-container {
                     grid-area: results;
                 }
                 .shopping-list-container {
                     grid-area: shopping-list;
-                    background: #fff3e0; /* Very light orange */
+                    background: #fff3e0;
                     padding: 20px;
                     border-radius: 12px;
                     box-shadow: var(--card-shadow);
@@ -85,6 +84,7 @@ class RecipePlatform extends HTMLElement {
                     overflow: hidden;
                     box-shadow: var(--card-shadow);
                     margin-bottom: 25px;
+                    position: relative;
                     transition: transform 0.3s ease, box-shadow 0.3s ease;
                 }
                 .recipe-card:hover {
@@ -104,7 +104,22 @@ class RecipePlatform extends HTMLElement {
                     color: var(--text-color);
                     font-size: 1.2rem;
                 }
-                 .add-to-list-btn {
+                .calorie-count {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: rgba(255, 255, 255, 0.8);
+                    padding: 5px 10px;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    color: var(--text-color);
+                }
+                .card-buttons {
+                    display: flex;
+                    gap: 10px;
+                }
+                .add-to-list-btn, .video-link {
                     padding: 10px 18px;
                     border: none;
                     border-radius: 8px;
@@ -112,10 +127,12 @@ class RecipePlatform extends HTMLElement {
                     color: var(--text-color);
                     cursor: pointer;
                     font-weight: 600;
+                    text-decoration: none;
+                    text-align: center;
                     transition: background-color 0.3s;
                 }
-                .add-to-list-btn:hover {
-                    background-color: #ffb74d; /* Darker shade of secondary */
+                .add-to-list-btn:hover, .video-link:hover {
+                    background-color: #ffb74d;
                 }
                 #shopping-list ul {
                     list-style-type: none;
@@ -126,11 +143,11 @@ class RecipePlatform extends HTMLElement {
                     border-bottom: 1px solid #ffcc80;
                     color: var(--text-color);
                 }
-                 #shopping-list li:last-child {
+                #shopping-list li:last-child {
                     border-bottom: none;
                 }
                 @media (max-width: 992px) {
-                     .search-container {
+                    .search-container {
                         grid-template-columns: 1fr 1fr;
                     }
                 }
@@ -148,7 +165,7 @@ class RecipePlatform extends HTMLElement {
                 }
             </style>
             <div class="container">
-                 <div class="search-container">
+                <div class="search-container">
                     <input id="search-input" type="text" placeholder="e.g., Spicy Chicken Noodles">
                     <select id="cuisine-select">
                         <option value="">All Cuisines</option>
@@ -197,6 +214,17 @@ class RecipePlatform extends HTMLElement {
         }
     }
 
+    async fetchYoutubeVideo(query) {
+        try {
+            const response = await fetch(`https://api.spoonacular.com/food/videos/search?apiKey=${this.spoonacularApiKey}&query=${query}&number=1`);
+            const data = await response.json();
+            return data.videos[0]?.youTubeId ? `https://www.youtube.com/watch?v=${data.videos[0].youTubeId}` : null;
+        } catch (error) {
+            console.error('Error fetching YouTube video:', error);
+            return null;
+        }
+    }
+
     async searchRecipes() {
         const query = this.shadowRoot.getElementById('search-input').value;
         const cuisine = this.shadowRoot.getElementById('cuisine-select').value;
@@ -204,7 +232,7 @@ class RecipePlatform extends HTMLElement {
         const resultsContainer = this.shadowRoot.getElementById('recipe-results');
         resultsContainer.innerHTML = '<p>Searching for delicious recipes...</p>';
 
-        let apiUrl = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${this.spoonacularApiKey}&query=${query}&number=12`;
+        let apiUrl = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${this.spoonacularApiKey}&query=${query}&number=12&addRecipeNutrition=true`;
 
         if (cuisine) {
             apiUrl += `&cuisine=${cuisine}`;
@@ -216,19 +244,23 @@ class RecipePlatform extends HTMLElement {
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
-            this.displayRecipes(data.results);
+            this.displayRecipes(data.results, calories);
         } catch (error) {
             resultsContainer.innerHTML = '<p>Could not fetch recipes. Please check your network connection or API key.</p>';
             console.error('Error fetching recipes:', error);
         }
     }
 
-    async displayRecipes(recipes) {
+    async displayRecipes(recipes, calories) {
         const resultsContainer = this.shadowRoot.getElementById('recipe-results');
         resultsContainer.innerHTML = '';
 
         if (!recipes || recipes.length === 0) {
-            resultsContainer.innerHTML = '<p>No recipes found. Try a different search!</p>';
+            if (calories) {
+                resultsContainer.innerHTML = `<p>No recipes found matching your search under ${calories} calories. Try a different search!</p>`;
+            } else {
+                resultsContainer.innerHTML = '<p>No matching recipes found. Try a different search!</p>';
+            }
             return;
         }
 
@@ -238,12 +270,18 @@ class RecipePlatform extends HTMLElement {
             
             const pexelsImage = await this.fetchPexelsImage(recipe.title);
             const imageUrl = pexelsImage || recipe.image;
+            const calorieInfo = recipe.nutrition.nutrients.find(n => n.name === 'Calories');
+            const videoUrl = await this.fetchYoutubeVideo(recipe.title);
 
             card.innerHTML = `
                 <img src="${imageUrl}" alt="${recipe.title}">
+                <div class="calorie-count">${Math.round(calorieInfo.amount)} kcal</div>
                 <div class="recipe-card-content">
                     <h3>${recipe.title}</h3>
-                    <button class="add-to-list-btn" data-recipe-id="${recipe.id}">Add to Shopping List</button>
+                    <div class="card-buttons">
+                        <button class="add-to-list-btn" data-recipe-id="${recipe.id}">Add to Shopping List</button>
+                        ${videoUrl ? `<a href="${videoUrl}" target="_blank" class="video-link">Watch Video</a>` : ''}
+                    </div>
                 </div>
             `;
             card.querySelector('.add-to-list-btn').addEventListener('click', (e) => this.addToShoppingList(e.target.dataset.recipeId));

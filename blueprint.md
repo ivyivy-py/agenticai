@@ -7,12 +7,14 @@ This project is a platform for users to search for recipes and create a shopping
 - **Web Components**: A `recipe-platform` custom element that encapsulates all application logic.
 - **Advanced Recipe Search**: Fetches and filters recipes from the Spoonacular API by query, cuisine, and calorie count.
 - **Dynamic Shopping List**: Allows users to generate a shopping list from the ingredients of any selected recipe.
-- **Modern Styling**: A responsive, modern design for the user interface.
+- **Modern Styling**: A responsive, modern design with a warm color scheme and a food-themed header.
+- **Pexels Integration**: Uses the Pexels API to display high-quality images for each recipe.
+- **Calorie Information**: Displays the calorie count for each recipe.
+- **Improved Search Feedback**: Provides specific messages when no recipes are found.
 
-## Current Plan: Visual & Thematic Overhaul
+## Current Plan: Add YouTube Video Links
 
 ### Steps
-1.  **Update Blueprint**: The `blueprint.md` file will be updated to reflect the plan for a complete visual and thematic overhaul.
-2.  **Add Header**: A new header with a prominent, food-themed background image will be added to the main page (`index.html`) to create a strong visual anchor.
-3.  **Implement Warm Color Scheme**: The entire application's color palette will be updated in `style.css`. It will feature a warm and inviting theme using colors like warm oranges, soft creams, and deep browns to create a cozy, appetizing feel.
-4.  **Integrate Pexels API for Images**: The `recipe-platform` component in `main.js` will be modified to fetch and display high-quality food images from Pexels.com for each recipe card, replacing the default images from the recipe API.
+1.  **Update Blueprint**: The `blueprint.md` will be updated to include the new YouTube video link feature.
+2.  **Request Video Data**: The `searchRecipes` method in `main.js` will be modified to request video information from the Spoonacular API.
+3.  **Display Video Link**: The `displayRecipes` method will be updated to include a link to the YouTube video on each recipe card. If a video is not available for a recipe, the link will not be displayed.
