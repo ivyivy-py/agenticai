@@ -146,6 +146,41 @@ class RecipePlatform extends HTMLElement {
                 #shopping-list li:last-child {
                     border-bottom: none;
                 }
+                #buy-ingredients-btn {
+                    margin-top: 20px;
+                    width: 100%;
+                    padding: 12px;
+                    border: none;
+                    border-radius: 8px;
+                    background-color: var(--primary-color);
+                    color: white;
+                    cursor: pointer;
+                    font-size: 16px;
+                    transition: background-color 0.3s;
+                }
+                #buy-ingredients-btn:hover {
+                    background-color: #ef6c00;
+                }
+                #grocery-links ul {
+                    list-style-type: none;
+                    padding: 0;
+                }
+                #grocery-links li {
+                    padding: 10px 0;
+                    border-bottom: 1px solid #ffcc80;
+                }
+                .grocer-links {
+                    margin-top: 5px;
+                }
+                .grocer-links a {
+                    margin-right: 10px;
+                    color: var(--primary-color);
+                    text-decoration: none;
+                    font-weight: 600;
+                }
+                .grocer-links a:hover {
+                    text-decoration: underline;
+                }
                 @media (max-width: 992px) {
                     .search-container {
                         grid-template-columns: 1fr 1fr;
@@ -187,11 +222,14 @@ class RecipePlatform extends HTMLElement {
                 <div class="shopping-list-container">
                     <h2>Shopping List</h2>
                     <div id="shopping-list"><ul></ul></div>
+                    <button id="buy-ingredients-btn" style="display: none;">Buy Ingredients Online</button>
+                    <div id="grocery-links"></div>
                 </div>
             </div>
         `;
 
         this.shadowRoot.getElementById('search-button').addEventListener('click', () => this.searchRecipes());
+        this.shadowRoot.getElementById('buy-ingredients-btn').addEventListener('click', () => this.generateGroceryLinks());
         this.shadowRoot.querySelector('#shopping-list ul').innerHTML = '<li>Your shopping list is empty.</li>';
     }
 
@@ -310,16 +348,48 @@ class RecipePlatform extends HTMLElement {
 
     displayShoppingList() {
         const shoppingListUl = this.shadowRoot.querySelector('#shopping-list ul');
+        const buyIngredientsBtn = this.shadowRoot.getElementById('buy-ingredients-btn');
+        const groceryLinksContainer = this.shadowRoot.getElementById('grocery-links');
+
         shoppingListUl.innerHTML = '';
+        groceryLinksContainer.innerHTML = '';
+
         if (this.shoppingList.size === 0) {
              shoppingListUl.innerHTML = '<li>Your shopping list is empty.</li>';
+             buyIngredientsBtn.style.display = 'none';
         } else {
             this.shoppingList.forEach(item => {
                 const li = document.createElement('li');
                 li.textContent = item;
                 shoppingListUl.appendChild(li);
             });
+            buyIngredientsBtn.style.display = 'block';
         }
+    }
+
+    generateGroceryLinks() {
+        const groceryLinksContainer = this.shadowRoot.getElementById('grocery-links');
+        groceryLinksContainer.innerHTML = '<h3>Where to Buy Your Ingredients</h3>';
+
+        const groceryListUl = document.createElement('ul');
+        groceryLinksContainer.appendChild(groceryListUl);
+
+        this.shoppingList.forEach(item => {
+            const encodedItem = encodeURIComponent(item);
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${item}</span>
+                <div class="grocer-links">
+                    <a href="https://www.amazon.com/fresh/s?k=${encodedItem}" target="_blank">Amazon Fresh</a>
+                    <a href="https://www.instacart.com/store/search/${encodedItem}" target="_blank">Instacart</a>
+                    <a href="https://www.walmart.com/search?q=${encodedItem}" target="_blank">Walmart</a>
+                </div>
+            `;
+            groceryListUl.appendChild(li);
+        });
+
+        this.shadowRoot.getElementById('buy-ingredients-btn').style.display = 'none';
     }
 }
 

@@ -11,7 +11,12 @@ This project is a platform for users to search for recipes and create a shopping
 - **Pexels Integration**: Uses the Pexels API to display high-quality images for each recipe.
 - **Calorie Information**: Displays the calorie count for each recipe.
 - **Improved Search Feedback**: Provides specific messages when no recipes are found.
-- **YouTube Video Links**: Displays a link to a YouTube video for each recipe if available.
+- **YouTube Integration**: Includes links to YouTube cooking videos for recipes.
 
-## Current Plan
-The project is currently up-to-date with the implemented features. No further changes are planned at this moment.
+## Current Plan: Integrate with Online Grocers
+
+### Steps
+1.  **Update Blueprint**: The `blueprint.md` will be updated to include the new online grocer integration feature.
+2.  **Add "Buy Ingredients" Button**: A "Buy Ingredients" button will be added to the shopping list section.
+3.  **Map Ingredients to Products**: When the "Buy Ingredients" button is clicked, the Spoonacular API will be used to map the ingredients in the shopping list to grocery products.
+4.  **Display Grocery Products**: The mapped grocery products will be displayed to the user, providing a convenient way to purchase the ingredients online.
