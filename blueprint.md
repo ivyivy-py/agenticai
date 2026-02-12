@@ -11,10 +11,7 @@ This project is a platform for users to search for recipes and create a shopping
 - **Pexels Integration**: Uses the Pexels API to display high-quality images for each recipe.
 - **Calorie Information**: Displays the calorie count for each recipe.
 - **Improved Search Feedback**: Provides specific messages when no recipes are found.
+- **YouTube Video Links**: Displays a link to a YouTube video for each recipe if available.
 
-## Current Plan: Add YouTube Video Links
-
-### Steps
-1.  **Update Blueprint**: The `blueprint.md` will be updated to include the new YouTube video link feature.
-2.  **Request Video Data**: The `searchRecipes` method in `main.js` will be modified to request video information from the Spoonacular API.
-3.  **Display Video Link**: The `displayRecipes` method will be updated to include a link to the YouTube video on each recipe card. If a video is not available for a recipe, the link will not be displayed.
+## Current Plan
+The project is currently up-to-date with the implemented features. No further changes are planned at this moment.
